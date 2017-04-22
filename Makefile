@@ -1,7 +1,10 @@
+CC ?= gcc
+CFLAGS ?= -Wall -std=c99 -pedantic
+
 all: encapsulate
 
 encapsulate: encapsulate.c
-	gcc -o encapsulate encapsulate.c
+	$(CC) $(CFLAGS) -o encapsulate encapsulate.c
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
