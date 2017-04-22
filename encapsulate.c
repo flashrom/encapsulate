@@ -26,21 +26,6 @@
 #include <unistd.h>
 #include <linux/sched.h>
 
-static int
-cmpstring(const void *p1, const void *p2)
-{
-	return strcmp(*(char **) p1, *(char **) p2);
-}
-
-int is_dir(const char *path)
-{
-	struct stat fileinfo;
-	int res = stat(path, &fileinfo);
-	if (res != 0) return 0;
-	if (!S_ISDIR(fileinfo.st_mode)) return 0;
-	return 1;
-}
-
 int mount_idemp(const char *path, const char *into)
 {
 	char *real = realpath(path, NULL);
@@ -50,11 +35,6 @@ int mount_idemp(const char *path, const char *into)
 	}
 	char *unreal = malloc(strlen(into)+strlen(real)+2);
 	sprintf(unreal, "%s/%s", into, real);
-
-	if (!is_dir(real)) {
-		printf("%s is not a directory\n", real);
-		return 1;
-	}
 
 	if (mount(real, unreal, NULL, MS_BIND, NULL) != 0) {
 		perror("mounting writable tree failed");
@@ -97,7 +77,7 @@ int main(int argc, char **argv)
 
 	char *chroot_path = mkdtemp(strdup("/tmp/encapsulate.XXXXXX"));
 
-	if ((chroot_path == NULL) || !is_dir(chroot_path)) {
+	if (chroot_path == NULL) {
 		printf("chroot directory is incorrect\n");
 		return 1;
 	}
